@@ -24,6 +24,8 @@ from ai.minimax.minimax import PestRiskMinimax
 from ai.kmeans.kmeans_service import KMeansService
 from ai.decision_tree.dtree_service import DecisionTreeService
 from ai.cnn.cnn_service import CNNDiseaseService
+from ai.dtree.predictor import crop_predictor
+from ai.dtree.decision_tree_v2_service import dtree_v2_service
 from firebase_db import AgroDatabaseService, using_firestore
 
 app = FastAPI(
@@ -89,6 +91,28 @@ class DTreeRequest(BaseModel):
     humidity: float = 55.0
     rainfall: float = 5.0
 
+class CropRecommendationRequest(BaseModel):
+    N: float
+    P: float
+    K: float
+    temperature: float
+    humidity: float
+    ph: float
+    rainfall: float
+
+class DecisionRequest(BaseModel):
+    crop: Optional[str] = "rice"
+    N: float = 90.0
+    P: float = 42.0
+    K: float = 43.0
+    temperature: float = 20.8
+    humidity: float = 82.0
+    ph: Optional[float] = None
+    soilPH: Optional[float] = None
+    rainfall: float = 202.9
+    soil_moisture: Optional[float] = None
+    soilMoisture: Optional[float] = None
+
 class SearchRequest(BaseModel):
     algorithm: str = "astar"  # bfs, dfs, astar
     start: List[int] = [0, 0]
@@ -108,7 +132,11 @@ def health_check():
         "project": "AgroAI",
         "fastapi_version": "0.110",
         "database": "Firestore (Cloud)" if using_firestore else "Persistent Database",
-        "ai_modules_ready": True
+        "ai_modules_ready": True,
+        "cropRecommendationModelLoaded": crop_predictor.is_loaded,
+        "decision_tree_v2": {
+            "loaded": dtree_v2_service.is_loaded
+        }
     }
 
 # --- Farm CRUD ---
@@ -692,6 +720,93 @@ def get_decision_tree(crop: str = "Tomato", soil_moisture: float = 30.0, soil_ph
         humidity=humidity,
         rainfall=rainfall
     )
+
+# --- Crop Recommendation Decision Tree API ---
+@app.post("/api/crop-recommendation")
+def recommend_crop_post(req: CropRecommendationRequest):
+    res = crop_predictor.predict(
+        N=req.N,
+        P=req.P,
+        K=req.K,
+        temperature=req.temperature,
+        humidity=req.humidity,
+        ph=req.ph,
+        rainfall=req.rainfall
+    )
+    if not res.get("success"):
+        raise HTTPException(status_code=400, detail=res.get("error", "Crop recommendation prediction failed"))
+    return res
+
+@app.get("/api/crop-recommendation")
+def recommend_crop_get(
+    N: float = 45.0,
+    P: float = 30.0,
+    K: float = 35.0,
+    temperature: float = 28.0,
+    humidity: float = 70.0,
+    ph: float = 6.5,
+    rainfall: float = 200.0
+):
+    res = crop_predictor.predict(
+        N=N,
+        P=P,
+        K=K,
+        temperature=temperature,
+        humidity=humidity,
+        ph=ph,
+        rainfall=rainfall
+    )
+    if not res.get("success"):
+        raise HTTPException(status_code=400, detail=res.get("error", "Crop recommendation prediction failed"))
+    return res
+
+# --- Decision Tree V2 Field Decision API ---
+@app.post("/api/decision")
+def predict_decision_post(req: DecisionRequest):
+    ph_val = req.ph if req.ph is not None else (req.soilPH if req.soilPH is not None else 6.5)
+    sm_val = req.soil_moisture if req.soil_moisture is not None else (req.soilMoisture if req.soilMoisture is not None else 45.0)
+
+    res = dtree_v2_service.predict(
+        crop=req.crop or "rice",
+        N=req.N,
+        P=req.P,
+        K=req.K,
+        temperature=req.temperature,
+        humidity=req.humidity,
+        ph=ph_val,
+        rainfall=req.rainfall,
+        soil_moisture=sm_val
+    )
+    if not res.get("success"):
+        raise HTTPException(status_code=400, detail=res.get("error", "Decision Tree V2 prediction failed"))
+    return res
+
+@app.get("/api/decision")
+def predict_decision_get(
+    crop: str = "rice",
+    N: float = 90.0,
+    P: float = 42.0,
+    K: float = 43.0,
+    temperature: float = 20.8,
+    humidity: float = 82.0,
+    ph: float = 6.5,
+    rainfall: float = 202.9,
+    soil_moisture: float = 46.9
+):
+    res = dtree_v2_service.predict(
+        crop=crop,
+        N=N,
+        P=P,
+        K=K,
+        temperature=temperature,
+        humidity=humidity,
+        ph=ph,
+        rainfall=rainfall,
+        soil_moisture=soil_moisture
+    )
+    if not res.get("success"):
+        raise HTTPException(status_code=400, detail=res.get("error", "Decision Tree V2 prediction failed"))
+    return res
 
 @app.post("/api/ai/cnn")
 async def run_cnn_disease_detection(file: UploadFile = File(...)):
