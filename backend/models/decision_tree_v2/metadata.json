@@ -1,0 +1,82 @@
+{
+  "model_version": "v2.0.0",
+  "system_name": "AgroAI Decision Tree V2 System",
+  "dataset_name": "agroai_labeled_dataset_v2.csv",
+  "dataset_path": "D:\\AgroAI\\backend\\data\\agroai_labeled_dataset_v2.csv",
+  "dataset_total_rows": 2200,
+  "training_timestamp": "2026-10-04T18:06:04.479441+00:00",
+  "random_seed": 42,
+  "scikit_learn_version": "1.9.1",
+  "features": [
+    "crop",
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "Soil Moisture"
+  ],
+  "targets": {
+    "water_need": {
+      "classes": [
+        "High",
+        "Low",
+        "Moderate",
+        "Urgent"
+      ],
+      "class_distribution_dataset": {
+        "Low": 1884,
+        "Moderate": 225,
+        "High": 82,
+        "Urgent": 9
+      },
+      "selected_hyperparameters": {
+        "class_weight": "balanced",
+        "criterion": "entropy",
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "min_samples_split": 10
+      },
+      "best_cv_macro_f1": 0.8211,
+      "test_macro_f1": 0.7822,
+      "test_accuracy": 0.95,
+      "test_weighted_f1": 0.951,
+      "ordinal_mae": 0.0523
+    },
+    "status": {
+      "classes": [
+        "Attention",
+        "Critical",
+        "Healthy"
+      ],
+      "class_distribution_dataset": {
+        "Healthy": 1534,
+        "Attention": 378,
+        "Critical": 288
+      },
+      "selected_hyperparameters": {
+        "class_weight": "balanced",
+        "criterion": "entropy",
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2
+      },
+      "best_cv_macro_f1": 0.894,
+      "test_macro_f1": 0.865,
+      "test_accuracy": 0.9136,
+      "test_weighted_f1": 0.9125
+    }
+  },
+  "soil_moisture_provenance": "Dataset V2 contains synthetic/derived Soil Moisture values.",
+  "artifacts": [
+    "water_need_pipeline.joblib",
+    "status_pipeline.joblib",
+    "metadata.json",
+    "metrics.json",
+    "feature_info.json",
+    "confusion_matrices/water_need_confusion_matrix.json",
+    "confusion_matrices/status_confusion_matrix.json"
+  ]
+}

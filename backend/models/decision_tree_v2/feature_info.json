@@ -1,0 +1,51 @@
+{
+  "features": [
+    "crop",
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "Soil Moisture"
+  ],
+  "numerical_features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "Soil Moisture"
+  ],
+  "categorical_features": [
+    "crop"
+  ],
+  "unique_crops": [
+    "apple",
+    "banana",
+    "blackgram",
+    "chickpea",
+    "coconut",
+    "coffee",
+    "cotton",
+    "grapes",
+    "jute",
+    "kidneybeans",
+    "lentil",
+    "maize",
+    "mango",
+    "mothbeans",
+    "mungbean",
+    "muskmelon",
+    "orange",
+    "papaya",
+    "pigeonpeas",
+    "pomegranate",
+    "rice",
+    "watermelon"
+  ],
+  "soil_moisture_provenance": "Training dataset agroai_labeled_dataset_v2.csv contains synthetic/derived Soil Moisture values."
+}
