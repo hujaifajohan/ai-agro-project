@@ -394,6 +394,16 @@ const DEFAULT_FIELDS: Field[] = [
     soilType: 'Salinas Silty Loam',
     latitude: 36.677,
     longitude: -121.655,
+    soilMoisture: 42,
+    soilPH: 6.8,
+    temperature: 24.5,
+    humidity: 82,
+    rainfall: 15,
+    nitrogen: 45,
+    phosphorus: 32,
+    potassium: 120,
+    cropGrowthStage: 'Vegetative Phase',
+    waterRequirement: 'Moderate',
     boundary: {
       type: 'Polygon',
       coordinates: [
@@ -438,6 +448,16 @@ const DEFAULT_FIELDS: Field[] = [
     soilType: 'Clay Loam',
     latitude: 36.672,
     longitude: -121.65,
+    soilMoisture: 28,
+    soilPH: 6.2,
+    temperature: 28.1,
+    humidity: 65,
+    rainfall: 5,
+    nitrogen: 30,
+    phosphorus: 20,
+    potassium: 90,
+    cropGrowthStage: 'Flowering & Tasseling',
+    waterRequirement: 'Urgent',
     boundary: {
       type: 'Polygon',
       coordinates: [
@@ -481,6 +501,16 @@ const DEFAULT_FIELDS: Field[] = [
     soilType: 'Chualar Sandy Loam',
     latitude: 36.680,
     longitude: -121.645,
+    soilMoisture: 55,
+    soilPH: 6.5,
+    temperature: 22.0,
+    humidity: 70,
+    rainfall: 10,
+    nitrogen: 50,
+    phosphorus: 35,
+    potassium: 110,
+    cropGrowthStage: 'Tillering Phase',
+    waterRequirement: 'Low',
     boundary: {
       type: 'Polygon',
       coordinates: [
@@ -516,6 +546,16 @@ const DEFAULT_FIELDS: Field[] = [
     soilType: 'Pacheco Silt Loam',
     latitude: 36.675,
     longitude: -121.662,
+    soilMoisture: 35,
+    soilPH: 6.3,
+    temperature: 26.5,
+    humidity: 75,
+    rainfall: 8,
+    nitrogen: 40,
+    phosphorus: 28,
+    potassium: 95,
+    cropGrowthStage: 'Fruiting Phase',
+    waterRequirement: 'Moderate',
     boundary: {
       type: 'Polygon',
       coordinates: [
@@ -1076,25 +1116,28 @@ export async function getOwnerFields(ownerId?: string): Promise<Field[]> {
     });
     
     if (dbFields.length === 0) {
-      return ownerId
-        ? FALLBACK_FIELDS.filter((f) => f.ownerId === ownerId || (!f.ownerId && ownerId === 'owner_demo'))
+      const matched = ownerId
+        ? FALLBACK_FIELDS.filter((f) => f.ownerId === ownerId || (!f.ownerId || ownerId === 'owner_demo'))
         : FALLBACK_FIELDS;
+      return matched.length > 0 ? matched : FALLBACK_FIELDS;
     }
 
-    const filtered = ownerId
+    let filtered = ownerId
       ? dbFields.filter((f) => {
           if (f.ownerId === ownerId || (f as any).userId === ownerId) return true;
-          if (ownerId === 'owner_demo' && (!f.ownerId || f.ownerId === 'owner_demo')) return true;
+          if ((!ownerId || ownerId === 'owner_demo' || ownerId) && (!f.ownerId || f.ownerId === 'owner_demo')) return true;
           return false;
         })
       : dbFields;
 
+    if (filtered.length === 0) {
+      filtered = dbFields.length > 0 ? dbFields : FALLBACK_FIELDS;
+    }
+
     return filtered;
   } catch (err) {
     console.error('getOwnerFields Firestore error:', err);
-    return ownerId
-      ? FALLBACK_FIELDS.filter((f) => f.ownerId === ownerId || (!f.ownerId && ownerId === 'owner_demo'))
-      : FALLBACK_FIELDS;
+    return FALLBACK_FIELDS;
   }
 }
 

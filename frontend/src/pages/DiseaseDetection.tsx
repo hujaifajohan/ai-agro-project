@@ -268,66 +268,8 @@ export const DiseaseDetection: React.FC = () => {
             )}
           </div>
 
-          {/* Right: CNN Pipeline */}
+          {/* Right: Disease Class Reference */}
           <div className="lg:col-span-7 flex flex-col gap-space-md">
-            {/* CNN Pipeline Steps */}
-            <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
-              <div className="px-space-lg py-space-md flex items-center gap-space-xs"
-                style={{ backgroundColor: 'rgba(239,244,255,0.4)', borderBottom: '1px solid rgba(193,200,194,0.3)' }}>
-                <span className="material-symbols-outlined text-secondary" style={{ fontSize: '20px' }}>account_tree</span>
-                <h2 className="font-headline-sm text-on-surface font-semibold">{t('diseaseDetection.pipelineArchitecture')}</h2>
-              </div>
-
-              <div className="p-space-lg">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm mb-space-lg">
-                  {[
-                    { step: '1', label: t('diseaseDetection.input'), desc: t('diseaseDetection.inputDescription'), icon: 'image' },
-                    { step: '2', label: t('diseaseDetection.preprocess'), desc: t('diseaseDetection.preprocessDescription'), icon: 'transform' },
-                    { step: '3', label: t('diseaseDetection.backbone'), desc: t('diseaseDetection.backboneDescription'), icon: 'hub' },
-                    { step: '4', label: t('diseaseDetection.output'), desc: t('diseaseDetection.outputDescription'), icon: 'output' },
-                  ].map(({ step, label, desc, icon }) => (
-                    <div key={step} className="flex flex-col items-center text-center p-space-md rounded-xl gap-space-sm"
-                       style={{ backgroundColor: 'var(--app-surface-container-low)', border: '1px solid var(--app-outline-variant)' }}>
-                      <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-semibold">
-                        <span className="material-symbols-outlined text-[20px]">{icon}</span>
-                      </div>
-                      <div className="font-label-md font-semibold text-secondary uppercase tracking-wider">{label}</div>
-                      <div className="font-body-sm text-on-surface-variant">{desc}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Model Specifications */}
-                <div className="rounded-xl p-space-lg space-y-space-md font-mono text-sm"
-                   style={{ backgroundColor: 'var(--app-primary-container)', color: 'var(--app-on-primary)' }}>
-                  <div className="flex items-center justify-between pb-space-sm" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                    <span className="text-secondary-fixed font-semibold flex items-center gap-space-xs">
-                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>terminal</span>
-                      {t('diseaseDetection.recommendedSpecs')}
-                    </span>
-                    <span className="font-label-sm text-on-surface-variant" style={{ color: 'rgba(234,241,255,0.5)' }}>
-                      {t('diseaseDetection.pytorchTransferLearning')}
-                    </span>
-                  </div>
-                  <div className="space-y-space-sm font-body-sm" style={{ fontSize: '13px' }}>
-                    {[
-                      t('diseaseDetection.baseBackboneSpec', 'Base Backbone: MobileNetV2 (Pre-trained on ImageNet)'),
-                      t('diseaseDetection.inputShapeSpec', 'Input Shape: (3, 224, 224) float32 tensor'),
-                      t('diseaseDetection.datasetSplitSpec', 'Dataset Split: 80% Train, 10% Validation, 10% Test'),
-                      t('diseaseDetection.outputLayerSpec', 'Output Layer: Softmax across candidate disease categories'),
-                      t('diseaseDetection.optimizerSpec', 'Optimizer: Adam (lr=0.001) with CosineAnnealingLR'),
-                    ].map((spec) => (
-                      <div key={spec} className="flex items-start gap-space-sm">
-                        <span className="material-symbols-outlined text-secondary-fixed shrink-0" style={{ fontSize: '14px' }}>
-                          check_circle
-                        </span>
-                        <span style={{ color: 'rgba(234,241,255,0.8)' }}>{spec}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
 
             {/* Disease Class Reference */}
             <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">

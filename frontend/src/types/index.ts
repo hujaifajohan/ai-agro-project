@@ -47,3 +47,57 @@ export interface SystemMetrics {
   criticalFields: number;
   waterAvailability: number; // in Liters or %
 }
+
+export interface CropRecommendationInput {
+  N: number;
+  P: number;
+  K: number;
+  temperature: number;
+  humidity: number;
+  ph: number;
+  rainfall: number;
+}
+
+export interface CropRecommendationResult {
+  success: boolean;
+  recommendedCrop?: string;
+  rawCrop?: string;
+  confidence?: number;
+  model?: string;
+  modelAccuracy?: number;
+  features?: CropRecommendationInput;
+  featureImportances?: Record<string, number>;
+  error?: string;
+}
+
+export interface FieldDecisionInput {
+  crop?: string;
+  N?: number;
+  P?: number;
+  K?: number;
+  temperature?: number;
+  humidity?: number;
+  ph?: number;
+  rainfall?: number;
+  soil_moisture?: number;
+  soilMoisture?: number;
+  soilPH?: number;
+}
+
+export interface FieldDecisionV2Result {
+  success: boolean;
+  status: 'Healthy' | 'Attention' | 'Critical' | string;
+  water_need: 'Low' | 'Moderate' | 'High' | 'Urgent' | string;
+  action: 'Pathogen AI' | 'Queue Run' | 'Inspect' | string;
+  action_route: string;
+  status_confidence: number;
+  water_need_confidence: number;
+  status_probabilities?: Record<string, number>;
+  water_need_probabilities?: Record<string, number>;
+  is_low_confidence?: boolean;
+  reasons?: string[];
+  model_version?: string;
+  soil_moisture_provenance?: string;
+  error?: string;
+}
+

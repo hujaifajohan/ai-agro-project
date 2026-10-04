@@ -1,4 +1,4 @@
-import type { Field } from '../types';
+import type { Field, CropRecommendationInput, CropRecommendationResult, FieldDecisionInput, FieldDecisionV2Result } from '../types';
 import { SAMPLE_FIELDS } from '../data/sampleFields';
 
 const API_BASE_URL = '/api';
@@ -714,6 +714,29 @@ export const apiService = {
     }
   },
 
+  async recommendCrop(data: CropRecommendationInput): Promise<CropRecommendationResult> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/crop-recommendation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          error: errorData.detail || errorData.error || 'Failed to get crop recommendation'
+        };
+      }
+      return await response.json();
+    } catch {
+      return {
+        success: false,
+        error: 'Unable to reach AgroAI crop recommendation service. Please check network connection.'
+      };
+    }
+  },
+
   async analyzeDiseaseImage(file: File): Promise<any> {
     try {
       const formData = new FormData();
@@ -841,6 +864,43 @@ export const apiService = {
       return await response.json();
     } catch {
       return [];
+    }
+  },
+
+  /** Decision Tree V2 Field Decision API */
+  async predictFieldDecision(input: FieldDecisionInput): Promise<FieldDecisionV2Result> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          status: 'Healthy',
+          water_need: 'Low',
+          action: 'Inspect',
+          action_route: '/fields',
+          status_confidence: 0,
+          water_need_confidence: 0,
+          error: errJson.detail || `HTTP error ${response.status}`,
+        };
+      }
+      return await response.json();
+    } catch (err: any) {
+      console.warn('[apiService] Decision Tree V2 API fetch failed:', err);
+      return {
+        success: false,
+        status: 'Healthy',
+        water_need: 'Low',
+        action: 'Inspect',
+        action_route: '/fields',
+        status_confidence: 0,
+        water_need_confidence: 0,
+        error: err?.message || 'Failed to connect to Decision Tree V2 backend API',
+      };
     }
   }
 };
