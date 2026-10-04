@@ -6,9 +6,7 @@ import type { Field } from '../types';
 import { ECOSYSTEM_UPDATED_EVENT, getFarms } from '../services/ecosystem';
 import { evaluateFieldDecision } from '../utils/decisionEngine';
 import { useI18n } from '../i18n';
-import { CropRecommendationCard } from '../components/CropRecommendationCard';
 import { CropRecommendationModal } from '../components/CropRecommendationModal';
-import { FieldDecisionCard } from '../components/FieldDecisionCard';
 
 export const Dashboard: React.FC = () => {
   const { userProfile } = useAuth();
@@ -310,18 +308,6 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Field AI Decision Tree V2 System Card */}
-        <div className="w-full">
-          <FieldDecisionCard fields={fields} />
-        </div>
-
-        {/* Decision Tree Crop Recommendation Widget */}
-        <div className="w-full">
-          <CropRecommendationCard
-            selectedField={fields.length > 0 ? fields[0] : null}
-            onOpenModal={() => setIsCropModalOpen(true)}
-          />
-        </div>
 
         {/* Two-Column Layout */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-gutter-lg items-start">
